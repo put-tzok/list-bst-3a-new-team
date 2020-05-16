@@ -5,7 +5,7 @@
 #include <signal.h>
 #include <time.h>
 
-unsigned int ns[] = { 10, /* TODO: fill values which will be used as lists' sizes */ };
+unsigned int ns[] = { 100 };
 
 // each tree node contains an integer key and pointers to left and right children nodes
 struct node {
@@ -17,30 +17,54 @@ struct node {
 // tree's beginning is called the root
 struct node *root = NULL;
 
+struct node *createNode(int item) {
+    struct node *temp = (struct node *)malloc(sizeof(struct node));
+    temp->key = item;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+
+//kod się nie kompiluje pewnie przez funkcję tree_search albo tree_maximum
+//ale nie udało mi się ich poprawnie uzupełnić
 struct node **tree_search(struct node **candidate, int value) {
-    // TODO: implement
-    return NULL;
+    if(value < (*candidate)->key)
+        return tree_search((*candidate)->left, value);
+    if(value > (*candidate)->key)
+        return tree_search((*candidate)->right, value);
+    return *candidate;
 }
 
 struct node* tree_insert(int value) {
-    // TODO: implement
-    return NULL;
+    struct node **temp = tree_search(&root, value);
+    *temp = createNode(value);
+    return;
 }
 
-
-
 struct node **tree_maximum(struct node **candidate) {
-    // TODO: implement
-    return NULL;
+    if((*candidate)->right != NULL)
+        return tree_maximum((*candidate)->right);
+    return *candidate;
 }
 
 void tree_delete(int value) {
-    // TODO: implement
+    struct node *temp = tree_search(&root, value);
+    if((temp)->left == NULL && (temp)->right == NULL)
+        (temp) = NULL;
+    else if((temp)->left != NULL && (temp)->right == NULL)
+        (temp) = (temp)->left;
+    else if((temp)->left == NULL && (temp)->right != NULL)
+        (temp) = (temp)->right;
+    else {
+        struct node *max = tree_maximum((temp)->left);
+        (temp)->key = (max)->key;
+        (max) = (max)->left;
+    }
 }
 
 unsigned int tree_size(struct node *element) {
-    // TODO: implement
-    return 0;
+    if(element == NULL)
+        return 0;
+    else return (tree_size(element->left) + tree_size(element->right) + 1);
 }
 
 /*
@@ -119,7 +143,9 @@ void insert_random(int *t, int n) {
 }
 
 void insert_binary(int *t, int n) {
-    // TODO: implement
+    for (int i = 0; i < n; i++) {
+        tree_insert(t[i]);
+    }
 }
 
 char *insert_names[] = { "Increasing", "Random", "Binary" };
